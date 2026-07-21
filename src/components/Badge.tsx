@@ -23,23 +23,58 @@ export function Badge({ children, variant = 'neutral' }: BadgeProps) {
 }
 
 export function StatusBadge({ status }: { status: UserStatus | ReportStatus }) {
+
   const map: Record<string, BadgeProps['variant']> = {
-    Active: 'success',
-    Approved: 'success',
-    Pending: 'warning',
-    Rejected: 'danger',
-    Inactive: 'neutral',
+    active: "success",
+    approved: "success",
+
+    pending: "warning",
+
+    rejected: "danger",
+
+    inactive: "neutral",
+    blocked: "danger",
   };
-  return <Badge variant={map[status]}>{status}</Badge>;
+
+  const labels: Record<string, string> = {
+    active: "Active",
+    approved: "Approved",
+
+    pending: "pending",
+
+    rejected: "Rejected",
+
+    inactive: "Inactive",
+    blocked: "Blocked",
+  };
+
+  return (
+    <Badge variant={map[status]}>
+      {labels[status]}
+    </Badge>
+  );
 }
 
 export function RoleBadge({ role }: { role: UserRole }) {
   const map: Record<UserRole, BadgeProps['variant']> = {
-    President: 'primary',
-    'Vice President': 'info',
-    Member: 'neutral',
+    president: 'primary',
+    vice_president: 'info',
+    member: 'neutral',
+    candidate: 'warning',
   };
-  return <Badge variant={map[role]}>{role}</Badge>;
+
+  const labels: Record<UserRole, string> = {
+    president: 'President',
+    vice_president: 'Vice President',
+    member: 'Member',
+    candidate: 'Candidate',
+  };
+
+  return (
+    <Badge variant={map[role]}>
+      {labels[role]}
+    </Badge>
+  );
 }
 
 export function StructureBadge({ structure }: { structure: string }) {

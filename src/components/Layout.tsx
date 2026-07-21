@@ -9,29 +9,54 @@ interface NavItem {
   icon: ReactNode;
 }
 
-function Avatar({ name, size = 32, className = '' }: { name: string; size?: number; className?: string }) {
-  const initials = name
-    .split(' ')
-    .map(n => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
+function Avatar({
+  name,
+  size = 32,
+  className = "",
+}: {
+  name?: string;
+  size?: number;
+  className?: string;
+}) {
+  const safeName = (name ?? "").trim();
+
+  const initials =
+    safeName.length > 0
+      ? safeName
+          .split(" ")
+          .filter(Boolean)
+          .map((n) => n[0])
+          .join("")
+          .toUpperCase()
+          .slice(0, 2)
+      : "?";
 
   const colors = [
-    ['#DBEAFE', '#2563EB'],
-    ['#D1FAE5', '#059669'],
-    ['#FCE7F3', '#DB2777'],
-    ['#FEF3C7', '#D97706'],
-    ['#EDE9FE', '#7C3AED'],
-    ['#FFEDD5', '#EA580C'],
+    ["#DBEAFE", "#2563EB"],
+    ["#D1FAE5", "#059669"],
+    ["#FCE7F3", "#DB2777"],
+    ["#FEF3C7", "#D97706"],
+    ["#EDE9FE", "#7C3AED"],
+    ["#FFEDD5", "#EA580C"],
   ];
-  const idx = name.charCodeAt(0) % colors.length;
+
+  const idx =
+    safeName.length > 0
+      ? safeName.charCodeAt(0) % colors.length
+      : 0;
+
   const [bg, fg] = colors[idx];
 
   return (
     <div
       className={`rounded-full flex items-center justify-center font-semibold flex-shrink-0 font-display ${className}`}
-      style={{ width: size, height: size, background: bg, color: fg, fontSize: size * 0.38 }}
+      style={{
+        width: size,
+        height: size,
+        background: bg,
+        color: fg,
+        fontSize: size * 0.38,
+      }}
     >
       {initials}
     </div>
@@ -107,10 +132,11 @@ export default function Layout({ children }: { children: ReactNode }) {
                 : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100'
             }`}
           >
-            <Avatar name={currentUser?.fullName ?? ''} size={22} />
+            <Avatar name={`${currentUser?.first_name ?? ""} ${currentUser?.last_name ?? ""}`} 
+            size={22} />
             <div className="text-left min-w-0 flex-1">
               <div className={`truncate text-[13px] font-medium leading-tight ${page === 'profile' ? 'text-white' : 'text-slate-800'}`}>
-                {currentUser?.fullName}
+                {`${currentUser?.first_name ?? ""} ${currentUser?.last_name ?? ""}`}
               </div>
               <div className={`text-[11px] leading-tight mt-0.5 ${page === 'profile' ? 'text-white/70' : 'text-slate-400'}`}>
                 {currentUser?.role}
@@ -138,7 +164,8 @@ export default function Layout({ children }: { children: ReactNode }) {
             <span className="font-display font-bold text-[15px] text-slate-900">StudentGov</span>
           </div>
           <button onClick={() => setPage('profile')}>
-            <Avatar name={currentUser?.fullName ?? ''} size={32} />
+            <Avatar name={`${currentUser?.first_name ?? ""} ${currentUser?.last_name ?? ""}`}
+  size={32} />
           </button>
         </header>
 

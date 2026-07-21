@@ -26,7 +26,7 @@ export default function AdminPage() {
     { id: 'reports', label: 'Reports', count: reports.filter(r => r.status === 'Pending').length },
   ];
 
-  const isPresident = currentUser?.role === 'President';
+  const isPresident = currentUser?.role === 'president';
 
   return (
     <div className="p-6 max-w-5xl mx-auto">

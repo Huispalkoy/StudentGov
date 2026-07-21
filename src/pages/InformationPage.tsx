@@ -22,7 +22,7 @@ export default function InformationPage() {
   const sortedAnnouncements = [...announcements].sort((a, b) => b.createdDate.localeCompare(a.createdDate));
   const sortedDocuments = [...documents].sort((a, b) => b.createdDate.localeCompare(a.createdDate));
   const leadership = users.filter(u => u.status === 'Active' && u.role !== 'Member').sort((a) => {
-    return a.role === 'President' ? -1 : 1;
+    return a.role === 'president' ? -1 : 1;
   });
   const members = users.filter(u => u.status === 'Active' && u.role === 'Member');
 

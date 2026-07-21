@@ -12,22 +12,33 @@ function formatDate(iso: string) {
 
 export default function ReportsPage() {
   const { currentUser, reports, users, submitReport, reviewReport } = useApp();
-  const isAdmin = currentUser?.role !== 'Member';
+  console.log("CURRENT USER:", currentUser);
+console.log("ROLE:", currentUser?.role);
+console.log("IS ADMIN:", currentUser?.role !== "member");
+  const isAdmin = currentUser?.role !== 'member';
 
   const [submitOpen, setSubmitOpen] = useState(false);
   const [reviewing, setReviewing] = useState<Report | null>(null);
   const [viewing, setViewing] = useState<Report | null>(null);
 
-  const myReports = [...reports]
-    .filter(r => r.authorId === currentUser?.id)
-    .sort((a, b) => b.createdDate.localeCompare(a.createdDate));
+  console.log("REPORTS PAGE:", reports);
+console.table(reports);
+ const myReports = [...reports]
+  .filter(r => r.authorId === currentUser?.id)
+  .sort((a, b) =>
+    (b.createdDate ?? "").localeCompare(a.createdDate ?? "")
+  );
 
-  const pendingForReview = [...reports]
-    .filter(r => r.status === 'Pending')
-    .sort((a, b) => a.createdDate.localeCompare(b.createdDate));
+const pendingForReview = [...reports]
+  .filter(r => (r.status ?? "").toLowerCase() === "pending")
+  .sort((a, b) =>
+    (a.createdDate ?? "").localeCompare(b.createdDate ?? "")
+  );
 
-  const allReports = [...reports]
-    .sort((a, b) => b.createdDate.localeCompare(a.createdDate));
+const allReports = [...reports]
+  .sort((a, b) =>
+    (b.createdDate ?? "").localeCompare(a.createdDate ?? "")
+  );
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
@@ -129,7 +140,7 @@ export default function ReportsPage() {
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <StatusBadge status={r.status} />
-                    {r.status === 'Approved' && r.awardedPoints !== 0 && (
+                    {r.status === 'approved' && r.awardedPoints !== 0 && (
                       <span className="text-[12px] font-semibold text-warning">+{r.awardedPoints}pts</span>
                     )}
                     <button onClick={() => setViewing(r)} className="text-slate-400 hover:text-primary transition-colors">
@@ -169,7 +180,7 @@ export default function ReportsPage() {
           author={users.find(u => u.id === viewing.authorId)}
           reviewer={users.find(u => u.id === viewing.reviewedBy)}
           onClose={() => setViewing(null)}
-          onReview={isAdmin && viewing.status === 'Pending' ? () => { setViewing(null); setReviewing(viewing); } : undefined}
+          onReview={isAdmin && viewing.status === 'pending' ? () => { setViewing(null); setReviewing(viewing); } : undefined}
         />
       )}
     </div>
@@ -181,19 +192,19 @@ function ReportCard({ report, onView }: { report: Report; onView: () => void }) 
     <div className="bg-card rounded-2xl border border-border p-4 flex gap-3 items-start">
       <div
         className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${
-          report.status === 'Approved'
+          report.status === 'approved'
             ? 'bg-success-bg text-success'
-            : report.status === 'Rejected'
+            : report.status === 'rejected'
             ? 'bg-danger-bg text-danger'
             : 'bg-warning-bg text-warning'
         }`}
       >
-        {report.status === 'Approved' ? Icons.check : report.status === 'Rejected' ? Icons.x : Icons.reports}
+        {report.status === 'approved' ? Icons.check : report.status === 'rejected' ? Icons.x : Icons.reports}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
           <StatusBadge status={report.status} />
-          {report.status === 'Approved' && report.awardedPoints !== 0 && (
+          {report.status === 'approved' && report.awardedPoints !== 0 && (
             <span className="text-[12px] font-semibold text-warning">+{report.awardedPoints} pts</span>
           )}
           <span className="text-slate-400 text-[11px]">{formatDate(report.createdDate)}</span>
@@ -284,15 +295,16 @@ function ReviewModal({
   report: Report;
   author?: { fullName: string };
   onClose: () => void;
-  onReview: (id: string, status: 'Approved' | 'Rejected', comment: string, pts: number) => void;
+  onReview: (id: string, status: 'approved' | 'rejected', comment: string, pts: number) => void;
 }) {
-  const [decision, setDecision] = useState<'Approved' | 'Rejected'>('Approved');
+  const [decision, setDecision] =
+useState<"approved" | "rejected">("approved");
   const [comment, setComment] = useState('');
   const [points, setPoints] = useState(10);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    onReview(report.id, decision, comment.trim(), decision === 'Approved' ? points : 0);
+    onReview(report.id, decision, comment.trim(), decision === 'approved' ? points : 0);
   }
 
   return (
@@ -332,13 +344,13 @@ function ReviewModal({
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <Field label="Decision" required>
-            <Select value={decision} onChange={e => setDecision(e.target.value as 'Approved' | 'Rejected')}>
-              <option value="Approved">Approved</option>
-              <option value="Rejected">Rejected</option>
+            <Select value={decision} onChange={e => setDecision(e.target.value as 'approved' | 'rejected')}>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
             </Select>
           </Field>
 
-          {decision === 'Approved' && (
+          {decision === 'approved' && (
             <Field label="Award Points">
               <Input
                 type="number"
@@ -364,9 +376,9 @@ function ReviewModal({
             <Btn
               type="submit"
               className="flex-1"
-              variant={decision === 'Approved' ? 'primary' : 'danger'}
+              variant={decision === 'approved' ? 'primary' : 'danger'}
             >
-              {decision === 'Approved' ? `Approve (+${points}pts)` : 'Reject'}
+              {decision === 'approved' ? `Approve (+${points}pts)` : 'Reject'}
             </Btn>
           </div>
         </form>
@@ -425,18 +437,18 @@ function ViewReportModal({
           </div>
         )}
 
-        {report.status !== 'Pending' && (
-          <div className={`rounded-xl p-3 ${report.status === 'Approved' ? 'bg-success-bg' : 'bg-danger-bg'}`}>
+        {report.status !== 'pending' && (
+          <div className={`rounded-xl p-3 ${report.status === 'approved' ? 'bg-success-bg' : 'bg-danger-bg'}`}>
             <div className="flex items-center justify-between mb-1">
-              <span className={`text-[12px] font-semibold ${report.status === 'Approved' ? 'text-success' : 'text-danger'}`}>
+              <span className={`text-[12px] font-semibold ${report.status === 'approved' ? 'text-success' : 'text-danger'}`}>
                 {report.status} by {reviewer?.fullName ?? 'Unknown'}
               </span>
-              {report.status === 'Approved' && report.awardedPoints !== 0 && (
+              {report.status === 'approved' && report.awardedPoints !== 0 && (
                 <span className="text-warning text-[13px] font-bold">+{report.awardedPoints} pts</span>
               )}
             </div>
             {report.reviewerComment && (
-              <p className={`text-[13px] ${report.status === 'Approved' ? 'text-success' : 'text-danger'} opacity-80`}>
+              <p className={`text-[13px] ${report.status === 'approved' ? 'text-success' : 'text-danger'} opacity-80`}>
                 "{report.reviewerComment}"
               </p>
             )}

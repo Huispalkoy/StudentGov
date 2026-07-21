@@ -1,7 +1,10 @@
-export type UserRole = 'Member' | 'Vice President' | 'President';
-export type UserStatus = 'Pending' | 'Active' | 'Inactive';
-export type UserStructure = 'Government' | 'Council of Class Presidents';
-export type ReportStatus = 'Pending' | 'Approved' | 'Rejected';
+export type UserRole = 'member' | 'vice_president' | 'president'  | 'candidate';
+export type UserStatus = 'pending' | 'active' | 'inactive'| 'blocked';
+structure:
+ profile.structure === "Council of Class Presidents"
+ ? "Council of Class Presidents"
+ : "Government";
+export type ReportStatus = 'pending' | 'approved' | 'rejected';
 export type PageName = 'dashboard' | 'profile' | 'members' | 'information' | 'reports' | 'admin';
 
 export interface User {

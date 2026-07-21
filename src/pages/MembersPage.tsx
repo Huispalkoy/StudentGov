@@ -11,22 +11,24 @@ export default function MembersPage() {
   const [filter, setFilter] = useState<'All' | 'Government' | 'Council of Class Presidents'>('All');
   const [selected, setSelected] = useState<User | null>(null);
 
-  const isAdmin = currentUser?.role !== 'Member';
-  const activeMembers = users.filter(u => u.status === 'Active');
+  const isAdmin = currentUser?.role !== 'member';
+  const activeMembers = users.filter(u => u.status === 'active');
 
   const filtered = activeMembers.filter(u => {
     const matchSearch =
-      u.fullName.toLowerCase().includes(search.toLowerCase()) ||
-      u.class.toLowerCase().includes(search.toLowerCase());
+  `${u.firstName} ${u.lastName}`.toLowerCase().includes(search.toLowerCase()) ||
+  u.className.toLowerCase().includes(search.toLowerCase());
     const matchFilter = filter === 'All' || u.structure === filter;
     return matchSearch && matchFilter;
   });
 
   // Sort: president first, then VP, then members; alphabetically within
   const sorted = [...filtered].sort((a, b) => {
-    const order = { President: 0, 'Vice President': 1, Member: 2 };
+    const order = { President: 0, 'vice_president': 1, Member: 2 };
     if (order[a.role] !== order[b.role]) return order[a.role] - order[b.role];
-    return a.fullName.localeCompare(b.fullName);
+    return `${a.firstName} ${a.lastName}`.localeCompare(
+  `${b.firstName} ${b.lastName}`
+);
   });
 
   return (
@@ -107,10 +109,14 @@ function MemberCard({
       className={`bg-card rounded-2xl border border-border p-4 flex gap-3 items-start transition-shadow ${onClick ? 'cursor-pointer hover:shadow-md hover:border-primary/30' : ''}`}
       onClick={onClick}
     >
-      <Avatar name={user.fullName} size={44} />
+      <Avatar name={`${user.firstName} ${user.lastName}`} size={44} />
       <div className="min-w-0 flex-1">
-        <div className="font-semibold text-[14px] text-slate-900 truncate">{user.fullName}</div>
-        <div className="text-slate-500 text-[12px] mt-0.5">Class {user.class}</div>
+        <div className="font-semibold text-[14px] text-slate-900 truncate">
+  {user.firstName} {user.lastName}
+</div>
+        <div className="text-slate-500 text-[12px] mt-0.5">
+  Class {user.className}
+</div>
         <div className="flex items-center gap-1.5 mt-2 flex-wrap">
           <RoleBadge role={user.role} />
           <StructureBadge structure={user.structure} />
@@ -140,11 +146,11 @@ function MemberDetailModal({ user, onClose }: { user: User; onClose: () => void 
         />
         <div className="px-5 pb-5">
           <div className="-mt-8 mb-4">
-            <Avatar name={user.fullName} size={60} className="ring-4 ring-white" />
+            <Avatar name={`${user.firstName} ${user.lastName}`} size={60} className="ring-4 ring-white" />
           </div>
           <div className="flex items-start justify-between mb-3">
             <div>
-              <h3 className="font-display font-bold text-lg text-slate-900">{user.fullName}</h3>
+              <h3 className="font-display font-bold text-lg text-slate-900">{`${user.firstName} ${user.lastName}`}</h3>
               <div className="flex gap-1.5 mt-1.5 flex-wrap">
                 <RoleBadge role={user.role} />
                 <StructureBadge structure={user.structure} />
@@ -159,9 +165,9 @@ function MemberDetailModal({ user, onClose }: { user: User; onClose: () => void 
           </div>
 
           <div className="flex flex-col gap-2.5 text-[13px]">
-            <Row label="Class" value={user.class} />
-            <Row label="Phone" value={user.phoneNumber || '—'} />
-            <Row label="Telegram" value={user.telegramUsername || '—'} />
+            <Row label="Class" value={user.className} />
+            <Row label="Phone" value={user.phone || '—'} />
+            <Row label="Telegram" value={user.telegram || '—'} />
             <Row label="Email" value={user.email} />
             <Row label="Points" value={`${user.points} pts`} highlight />
             <Row

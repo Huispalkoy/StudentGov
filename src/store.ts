@@ -45,7 +45,7 @@ const seedUsers: User[] = [
     phoneNumber: '+1 (555) 100-0001',
     telegramUsername: '@emma_r',
     structure: 'Government',
-    role: 'President',
+    role: 'president',
     points: 320,
     status: 'Active',
     email: 'president@school.edu',

@@ -31,7 +31,7 @@ export default function DashboardPage() {
       <div className="mb-8">
         <p className="text-slate-500 text-sm">{greeting()}</p>
         <h1 className="font-display font-bold text-2xl text-slate-900 mt-0.5">
-          {currentUser?.fullName.split(' ')[0]} 👋
+          {currentUser?.fullName?.split(' ')[0] ?? currentUser?.firstName ?? "User"} 👋
         </h1>
       </div>
 

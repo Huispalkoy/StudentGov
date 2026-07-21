@@ -8,7 +8,7 @@ import type { UserRole, UserStatus, UserStructure } from '../types';
 export default function ProfilePage() {
   const { currentUser, updateUser, reports } = useApp();
   const [editing, setEditing] = useState(false);
-  const isAdmin = currentUser?.role === 'President';
+  const isAdmin = currentUser?.role === 'president';
 
   const myReports = reports.filter(r => r.authorId === currentUser?.id);
   const approved = myReports.filter(r => r.status === 'Approved').length;

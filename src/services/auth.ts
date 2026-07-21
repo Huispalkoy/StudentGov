@@ -34,7 +34,7 @@ export async function signUp(data: RegisterData) {
       phone: data.phone ?? "",
       telegram: data.telegram ?? "",
       class_name: data.className ?? "",
-      structure: "Учнівське самоврядування",
+      structure: "Уряд ліцею",
     })
     .eq("id", authData.user.id);
 
