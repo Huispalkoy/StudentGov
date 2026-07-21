@@ -6,16 +6,26 @@ export type PageName = 'dashboard' | 'profile' | 'members' | 'information' | 're
 
 export interface User {
   id: string;
-  fullName: string;
-  class: string;
-  phoneNumber: string;
-  telegramUsername: string;
-  structure: UserStructure;
-  role: UserRole;
-  points: number;
-  status: UserStatus;
+
   email: string;
-  password: string;
+
+  firstName: string;
+  lastName: string;
+
+  className: string;
+
+  phone: string;
+
+  telegram: string;
+
+  structure: UserStructure;
+
+  role: UserRole;
+
+  status: UserStatus;
+
+  points: number;
+
   createdAt: string;
 }
 

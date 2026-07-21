@@ -1,3 +1,5 @@
+import { signIn, signOut } from "./services/auth";
+import { supabase } from "./lib/supabase";
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import type { User, Report, Announcement, Document, PageName } from './types';
 import {
@@ -63,21 +65,41 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const setAnnouncements = (a: Announcement[]) => { saveAnnouncements(a); setAnnouncementsState(a); };
   const setDocuments = (d: Document[]) => { saveDocuments(d); setDocumentsState(d); };
 
-  function login(email: string, password: string): 'ok' | 'invalid' | 'pending' | 'inactive' {
-    const user = usersState.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === btoa(password));
-    if (!user) return 'invalid';
-    if (user.status === 'Pending') return 'pending';
-    if (user.status === 'Inactive') return 'inactive';
-    setCurrentUser(user);
-    setSession(user.id);
-    setPage('dashboard');
-    return 'ok';
-  }
+  async function login(
+  email: string,
+  password: string
+): Promise<"ok" | "invalid" | "pending" | "inactive"> {
+  try {
+    const auth = await signIn(email, password);
 
-  function logout() {
-    setCurrentUser(null);
-    clearSession();
+    const userId = auth.user.id;
+
+    const { data: profile, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .single();
+
+    if (error || !profile) return "invalid";
+
+    if (profile.status === "pending") return "pending";
+    if (profile.status === "inactive") return "inactive";
+
+    setCurrentUser(profile);
+    setSession(profile.id);
+    setPage("dashboard");
+
+    return "ok";
+  } catch {
+    return "invalid";
   }
+}
+
+  async function logout() {
+  await signOut();
+  setCurrentUser(null);
+  clearSession();
+}
 
   function register(data: Omit<User, 'id' | 'role' | 'points' | 'status' | 'createdAt'>) {
     const newUser: User = {

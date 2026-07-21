@@ -1,3 +1,4 @@
+import { signUp } from "../services/auth";
 import { useState } from 'react';
 import { useApp } from '../context';
 import { Input, Field, Btn } from '../components/Modal';
@@ -60,24 +61,37 @@ export default function LoginPage() {
     if (validateStep1()) setStep(2);
   }
 
-  function handleRegSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const errs: typeof regErrors = {};
-    if (!reg.class.trim()) errs.class = 'Required';
-    if (!reg.phoneNumber.trim()) errs.phoneNumber = 'Required';
-    setRegErrors(errs);
-    if (Object.keys(errs).length > 0) return;
-    register({
-      fullName: reg.fullName.trim(),
+ async function handleRegSubmit(e: React.FormEvent) {
+  e.preventDefault();
+
+  const errs: typeof regErrors = {};
+
+  if (!reg.class.trim()) errs.class = "Required";
+  if (!reg.phoneNumber.trim()) errs.phoneNumber = "Required";
+
+  setRegErrors(errs);
+
+  if (Object.keys(errs).length > 0) return;
+
+  try {
+    const [firstName, ...lastNameParts] = reg.fullName.trim().split(" ");
+
+    await signUp({
       email: reg.email.trim(),
-      password: btoa(reg.password),
-      class: reg.class.trim(),
-      phoneNumber: reg.phoneNumber.trim(),
-      telegramUsername: reg.telegramUsername.trim(),
-      structure: reg.structure,
+      password: reg.password,
+      firstName,
+      lastName: lastNameParts.join(" "),
+      phone: reg.phoneNumber.trim(),
+      telegram: reg.telegramUsername.trim(),
+      className: reg.class.trim(),
     });
+
     setRegSuccess(true);
+
+  } catch (error: any) {
+    alert(error.message);
   }
+}
 
   function upd(k: keyof typeof reg) {
     return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
